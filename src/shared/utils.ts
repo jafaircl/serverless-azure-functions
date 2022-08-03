@@ -1,4 +1,5 @@
-import { relative, join } from "path";
+import { relative, join, resolve } from "path";
+import { existsSync } from "fs";
 import Serverless from "serverless";
 import { ServerlessAzureConfig, ServerlessAzureFunctionConfig } from "../models/serverless";
 import { BindingUtils } from "./bindings";
@@ -233,6 +234,24 @@ export class Utils {
       })
     });
   }
+
+  /**
+   * Finds the nearest package.json file
+   * @param startDir the directory to start searching in
+   */
+  public static findPackageJson(startDir?: any) {
+    let dir = resolve(startDir || process.cwd());
+    do {
+      const pkgfile = join(dir, "package.json");
+
+      if (!existsSync(pkgfile)) {
+        dir = join(dir, "..");
+        continue;
+      }
+      return pkgfile;
+    } while (dir !== resolve(dir, ".."));
+    return startDir;
+  }
   
   /*
    * Spawn a Node child process from executable within node_modules/.bin
@@ -242,7 +261,7 @@ export class Utils {
   public static spawnLocal(options: ServerlessSpawnOptions): Promise<void> {
     const { serverless, command } = options;
     const localCommand = join(
-      serverless.config.servicePath,
+      this.findPackageJson(serverless.config.servicePath),
       "node_modules",
       ".bin",
       command
