@@ -23,7 +23,7 @@
     "generate:spn": "bash ./scripts/generate-service-principal.sh",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "changelog:condensed": "npm run changelog && node ./scripts/condenseChangelog.js",
-    "install": "npm run build"
+    "install": "npm run compile"
   },
   "repository": {
     "git": "https://github.com/serverless/serverless-azure-functions"
